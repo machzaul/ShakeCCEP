@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import qrConfig from '@/config/qrMatrix.json';
 
 export interface TotemResultData {
   name: string;
@@ -26,30 +27,17 @@ export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
   resData,
   resTimer,
 }) => {
-  // Procedural QR SVG matching the original HTML
+  // Extract 100% crisp pixel matrix from the user's uploaded QR image
   const qrRects = useMemo(() => {
-    const rects: { x: number; y: number; w: number; h: number; fill: string }[] = [];
-    let seed = 7;
-    const rnd = () => {
-      seed = (seed * 9301 + 49297) % 233280;
-      return seed / 233280;
-    };
-    const fin = (x: number, y: number) => {
-      rects.push({ x, y, w: 7, h: 7, fill: '#1D0E0F' });
-      rects.push({ x: x + 1, y: y + 1, w: 5, h: 5, fill: '#fff' });
-      rects.push({ x: x + 2, y: y + 2, w: 3, h: 3, fill: '#1D0E0F' });
-    };
-    for (let y = 0; y < 21; y++) {
-      for (let x = 0; x < 21; x++) {
-        if ((x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12)) continue;
-        if (rnd() > 0.5) {
-          rects.push({ x, y, w: 1, h: 1, fill: '#1D0E0F' });
+    const rects: { x: number; y: number }[] = [];
+    const matrix = qrConfig.matrix;
+    for (let r = 0; r < matrix.length; r++) {
+      for (let c = 0; c < matrix[r].length; c++) {
+        if (matrix[r][c] === 1) {
+          rects.push({ x: c, y: r });
         }
       }
     }
-    fin(0, 0);
-    fin(14, 0);
-    fin(0, 14);
     return rects;
   }, []);
 
@@ -90,10 +78,16 @@ export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
       </div>
 
       <div className="rBot">
-        <div className="qr">
-          <svg id="qrsvg" viewBox="0 0 21 21" shapeRendering="crispEdges">
+        <div className="qr" title={`Voucher Code: ${qrConfig.data}`}>
+          <svg
+            id="qrsvg"
+            viewBox="0 0 21 21"
+            shapeRendering="crispEdges"
+            style={{ width: '100%', height: '100%', display: 'block' }}
+          >
+            <rect width="21" height="21" fill="#fff" />
             {qrRects.map((r, i) => (
-              <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
+              <rect key={i} x={r.x} y={r.y} width={1} height={1} fill="#1D0E0F" />
             ))}
           </svg>
         </div>
@@ -103,8 +97,26 @@ export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
             Scan to get <span id="qPts">{resData.pts}</span> pts
           </b>
           <p>
-            Open the <strong>Sales Rally app</strong> and scan this QR before the timer ends. Put the bottle back to finish early.
+            Open the <strong>Sales Rally app</strong> and scan this QR before the timer ends.
           </p>
+          <div
+            style={{
+              display: 'inline-block',
+              marginTop: '4px',
+              fontFamily: 'monospace',
+              fontSize: '22px',
+              fontWeight: 800,
+              color: 'var(--gold)',
+              letterSpacing: '0.12em',
+              background: 'rgba(255, 201, 60, 0.12)',
+              padding: '2px 10px',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 201, 60, 0.35)',
+              alignSelf: 'flex-start',
+            }}
+          >
+            CODE: {qrConfig.data}
+          </div>
           <div className="tmr" id="tmr" style={{ ['--tw' as string]: `${progressPercent}%` } as React.CSSProperties}>
             <i />
             <span>

@@ -96,7 +96,12 @@ export const OperatorOverlay: React.FC<OperatorOverlayProps> = ({
                 HIDDEN
               </span>
             </h2>
-            <p className="text-xs text-slate-400 mt-1">Windows Mini PC Offline Arcade Runtime Monitor</p>
+            <p className="text-xs text-slate-400 mt-1">
+              Windows Mini PC Offline Arcade Monitor ·{' '}
+              <a href="/operator" target="_blank" className="text-amber-400 hover:text-amber-300 underline font-bold">
+                📱 Buka Halaman Mobile Operator (/operator)
+              </a>
+            </p>
           </div>
           <button
             onClick={onClose}

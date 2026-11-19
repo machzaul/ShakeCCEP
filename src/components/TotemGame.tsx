@@ -827,6 +827,73 @@ export const TotemGame: React.FC = () => {
     };
   }, [clearTimers, cpHit, handleShake, liftoff, place, showResult]);
 
+  // Remote Operator Synchronization (Syncs live state & executes commands from mobile phone)
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    let isDisposed = false;
+
+    const syncRemoteOperator = async () => {
+      if (isDisposed) return;
+      try {
+        const hw = hardwareBridge.getStatus();
+        // 1. Report live state to API
+        await fetch('/api/operator', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'SYNC',
+            state: {
+              connected: hw.connected,
+              deviceName: hw.name,
+              batteryLevel: hw.batteryLevel ?? 100,
+              gameState: opState,
+              score: opScore,
+              energy: opEnergy,
+              totalShakes: hw.totalEvents,
+              lastEventTime: hw.lastEventTime || 0,
+              audioMuted: !audioManager.isEnabled(),
+            },
+          }),
+        });
+
+        // 2. Consume actions sent by mobile phone
+        const res = await fetch('/api/operator?consume=1');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.actions && Array.isArray(data.actions)) {
+            for (const act of data.actions) {
+              if (act.type === 'SHAKE') {
+                handleShake(act.payload?.intensity || 80);
+              } else if (act.type === 'START') {
+                if (engineRef.current.state === 'idle') {
+                  startCountdown();
+                } else {
+                  handleShake(80);
+                }
+              } else if (act.type === 'RESET') {
+                place();
+              } else if (act.type === 'MUTE') {
+                audioManager.setEnabled(!audioManager.isEnabled());
+              }
+            }
+          }
+        }
+      } catch {
+        // ignore network error
+      } finally {
+        if (!isDisposed) {
+          timer = setTimeout(syncRemoteOperator, 400);
+        }
+      }
+    };
+
+    syncRemoteOperator();
+    return () => {
+      isDisposed = true;
+      clearTimeout(timer);
+    };
+  }, [handleShake, opEnergy, opScore, opState, place, startCountdown]);
+
   return (
     <div className="totem-root">
       <div
