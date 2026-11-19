@@ -151,3 +151,12 @@ Press **`[O]`** or **`[Ctrl + Shift + D]`** on a connected keyboard to toggle th
 └── package.json
 ```
 
+---
+
+## Update Terbaru
+- **Protokol 4-Kolom dengan Baterai:** `SHAKE,<id>,<intensity>,<battery>` untuk monitoring baterai botol di layar operator.
+- **Dukungan 2 Botol (Utama & Cadangan):** Multi-UUID auto-detect (`...1214` dan `...1215`) dengan auto-reconnect saat out-of-range.
+- **UI Result Screen:** QR Code claim points SVG, animated countdown bar 60s, dan typography persis Totem Arcade.
+- **Pembersihan Tampilan:** Menghilangkan efek zoom mendadak saat waktu habis, teks demo instruksi di layar idle, dan banner bawah.
+
+
