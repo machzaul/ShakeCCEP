@@ -104,9 +104,23 @@ async def ble_worker():
                 continue
 
             logger.info(f"Connecting to {device.name} ({device.address})...")
-            async with BleakClient(device.address) as client:
+            disconnect_event = asyncio.Event()
+
+            def on_disconnect(c):
+                logger.warning(f"BLE controller '{device.name}' disconnected (out of range / signal lost).")
+                disconnect_event.set()
+
+            async with BleakClient(device.address, disconnected_callback=on_disconnect) as client:
                 logger.info(f"Connected to BLE controller: {device.name}")
                 
+                # Notify frontend that controller is connected
+                await broadcast_message(json.dumps({
+                    "type": "STATUS",
+                    "connected": True,
+                    "name": device.name,
+                    "totalEvents": event_counter
+                }))
+
                 # Find and subscribe to matching shake characteristic
                 subscribed_uuid = None
                 for char_uuid in SUPPORTED_SHAKE_UUIDS:
@@ -122,11 +136,17 @@ async def ble_worker():
                     logger.error("Could not find any matching shake characteristic on device!")
                     continue
 
-                # Keep connected until disconnect
-                while client.is_connected:
-                    await asyncio.sleep(1.0)
+                # Wait until disconnection event is triggered by Bleak
+                await disconnect_event.wait()
+                logger.info("Cleaning up session and preparing for auto-reconnect...")
 
-                logger.warning("BLE controller disconnected.")
+            # Broadcast disconnect status to browser
+            await broadcast_message(json.dumps({
+                "type": "STATUS",
+                "connected": False,
+                "name": TARGET_DEVICE_NAME,
+                "totalEvents": event_counter
+            }))
 
         except Exception as e:
             logger.error(f"BLE error: {e}. Reconnecting in 3s...")

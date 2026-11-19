@@ -101,10 +101,19 @@ void setup() {
   // Set initial characteristic value
   shakeCharacteristic.writeValue("SHAKE,0,0,0");
 
+  // Event handlers for instant auto-recovery if out of range
+  BLE.setEventHandler(BLEDisconnected, bleDisconnectHandler);
+
   // Start Advertising
   BLE.advertise();
   Serial.println("[OK] BLE Advertising as '" DEVICE_NAME "'...");
   Serial.println("Ready to connect to Windows Mini PC!");
+}
+
+void bleDisconnectHandler(BLEDevice central) {
+  Serial.println("[BLE EVENT] Central disconnected (out of range). Re-advertising immediately...");
+  digitalWrite(LED_PIN, HIGH); // Turn off LED
+  BLE.advertise();             // Resume beacon so PC reconnects as soon as in range
 }
 
 void loop() {
