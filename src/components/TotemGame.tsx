@@ -61,16 +61,23 @@ export const TotemGame: React.FC = () => {
   const [opEnergy, setOpEnergy] = useState(0);
 
   const [resData, setResData] = useState<TotemResultData>({
-    name: 'Jupiter',
-    key: 'jupiter',
-    dist: '628M km',
-    fuel: '54%',
-    pts: '+120',
-    rkN: 12,
-    rkT: 248,
-    rkTxt: 'You flew farther than 95% of players today.',
+    name: 'Unstoppable',
+    key: 'unstop',
+    dist: '10B KM',
+    fuel: '100%',
+    pts: '+10',
+    rkN: 1,
+    rkT: 247,
+    rkTxt: "Farthest flight today. You're unstoppable!",
   });
   const [resTimer, setResTimer] = useState(20);
+  const [isAudioMuted, setIsAudioMuted] = useState(!audioManager.isEnabled());
+
+  const toggleAudio = useCallback(() => {
+    const next = !audioManager.isEnabled();
+    audioManager.setEnabled(next);
+    setIsAudioMuted(!next);
+  }, []);
 
   // Mutable engine state for 60fps loop without React re-renders
   const engineRef = useRef({
@@ -873,7 +880,7 @@ export const TotemGame: React.FC = () => {
               } else if (act.type === 'RESET') {
                 place();
               } else if (act.type === 'MUTE') {
-                audioManager.setEnabled(!audioManager.isEnabled());
+                toggleAudio();
               }
             }
           }
@@ -912,7 +919,12 @@ export const TotemGame: React.FC = () => {
           <i className="s" />
         </div>
 
-        <IdleScreen active={activeScreen === 'idle'} ctaRef={ctaRef} />
+        <IdleScreen
+          active={activeScreen === 'idle'}
+          ctaRef={ctaRef}
+          isAudioMuted={isAudioMuted}
+          onToggleAudio={toggleAudio}
+        />
 
         <ShakeScreen
           active={activeScreen === 'shake'}
@@ -947,6 +959,8 @@ export const TotemGame: React.FC = () => {
           rstCanvasRef={rstCanvasRef}
           resData={resData}
           resTimer={resTimer}
+          isAudioMuted={isAudioMuted}
+          onToggleAudio={toggleAudio}
         />
 
         <div ref={flashRef} className="flash" id="flash" />
