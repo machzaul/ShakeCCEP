@@ -9,14 +9,14 @@ export interface Dest {
 
 export const DEST: Dest[] = [
   { k: 'sky', n: 'Cloud Line', f: 0, d: 1, p: 10, c: '#cfe3ff' },
-  { k: 'space', n: 'Outer Space', f: 8, d: 100, p: 20, c: '#5560d8' },
-  { k: 'moon', n: 'The Moon', f: 20, d: 384400, p: 50, c: '#d8d2c4' },
-  { k: 'mars', n: 'Mars', f: 34, d: 225e6, p: 80, c: '#d8582a' },
-  { k: 'jupiter', n: 'Jupiter', f: 48, d: 628e6, p: 120, c: '#d9a874' },
-  { k: 'saturn', n: 'Saturn', f: 62, d: 1.27e9, p: 160, c: '#e2bf78' },
-  { k: 'uranus', n: 'Uranus', f: 75, d: 2.72e9, p: 200, c: '#7fd8e0' },
-  { k: 'neptune', n: 'Neptune', f: 88, d: 4.35e9, p: 250, c: '#3a5fe0' },
-  { k: 'unstop', n: 'Unstoppable', f: 100, d: 1e10, p: 300, c: '#E8001C' },
+  { k: 'space', n: 'Outer Space', f: 8, d: 100, p: 10, c: '#5560d8' },
+  { k: 'moon', n: 'The Moon', f: 20, d: 384400, p: 10, c: '#d8d2c4' },
+  { k: 'mars', n: 'Mars', f: 34, d: 225e6, p: 10, c: '#d8582a' },
+  { k: 'jupiter', n: 'Jupiter', f: 48, d: 628e6, p: 10, c: '#d9a874' },
+  { k: 'saturn', n: 'Saturn', f: 62, d: 1.27e9, p: 10, c: '#e2bf78' },
+  { k: 'uranus', n: 'Uranus', f: 75, d: 2.72e9, p: 10, c: '#7fd8e0' },
+  { k: 'neptune', n: 'Neptune', f: 88, d: 4.35e9, p: 10, c: '#3a5fe0' },
+  { k: 'unstop', n: 'Unstoppable', f: 100, d: 1e10, p: 10, c: '#E8001C' },
 ];
 
 export const HERO_FRAMES = [
@@ -122,28 +122,20 @@ function todayKey(): string {
 export function loadPlays(): number[] {
   let P: number[] | null = null;
   try {
-    const o = JSON.parse(localStorage.getItem('cokeitup_plays') || 'null');
-    if (o && o.day === todayKey()) P = o.P;
+    const o = JSON.parse(localStorage.getItem('cokeitup_real_plays') || 'null');
+    if (o && o.day === todayKey() && Array.isArray(o.P)) P = o.P;
   } catch {
     // ignore
   }
   if (!P) {
     P = [];
-    let sd = 11;
-    const r = () => {
-      sd = (sd * 9301 + 49297) % 233280;
-      return sd / 233280;
-    };
-    for (let i = 0; i < 246; i++) {
-      P.push(Math.round(Math.min(100, Math.max(6, 38 + (r() + r() + r() - 1.5) * 42))));
-    }
   }
   return P;
 }
 
 export function savePlays(P: number[]) {
   try {
-    localStorage.setItem('cokeitup_plays', JSON.stringify({ day: todayKey(), P }));
+    localStorage.setItem('cokeitup_real_plays', JSON.stringify({ day: todayKey(), P }));
   } catch {
     // ignore
   }

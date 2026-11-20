@@ -19,6 +19,8 @@ interface ResultScreenTotemProps {
   rstCanvasRef: React.RefObject<HTMLCanvasElement | null>;
   resData: TotemResultData;
   resTimer: number;
+  isAudioMuted?: boolean;
+  onToggleAudio?: () => void;
 }
 
 export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
@@ -43,14 +45,20 @@ export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
 
   const progressPercent = Math.max(0, Math.min(100, (resTimer / 60) * 100));
 
-  // Format pts display (e.g. +10 PTS)
-  const ptsDisplay = resData.pts.startsWith('+') ? `${resData.pts} PTS` : `+${resData.pts} PTS`;
-
   return (
-    <section className={`scr ${active ? 'on' : ''}`} id="res">
+    <section
+      className={`scr ${active ? 'on' : ''} ${resData.key === 'unstop' ? 'unst' : ''}`}
+      id="res"
+    >
       <canvas ref={rstCanvasRef} className="stars" id="rst" width="1080" height="1920" />
 
-      {/* Direct centered graphic without text heading, exactly as requested */}
+      {/* Top Heading */}
+      <div className="rTop">
+        <small>YOU FLEW TO</small>
+        <h2 id="rName">{resData.name}</h2>
+      </div>
+
+      {/* Planet / Cap Graphic and Hero */}
       <div className="pl rPl" id="rPl" data-k={resData.key} />
       <img className="rHero" src="/totem-assets/asset_19_8aeeb229.webp" alt="" />
 
@@ -82,7 +90,7 @@ export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
         <p id="rkTxt">{resData.rkTxt}</p>
       </div>
 
-      {/* Claim Points QR Box */}
+      {/* Claim Points QR Box matching coke-it-up-totem (3).html */}
       <div className="rBot">
         <div className="qr" title={`Voucher Code: ${qrConfig.data}`}>
           <svg
@@ -100,18 +108,25 @@ export const ResultScreenTotem: React.FC<ResultScreenTotemProps> = ({
         <div className="qt">
           <small>CLAIM YOUR POINTS</small>
           <b>
-            SCAN TO GET {ptsDisplay}
+            Scan to get <span id="qPts">{resData.pts}</span> pts
           </b>
           <p>
-            Open the <strong style={{ color: 'var(--gold)' }}>Sales Rally microsite</strong> and scan this QR before the timer ends. Put the bottle back to finish early.
+            Open the <strong>Sales Rally microsite</strong> and scan this QR before the timer ends. Put the bottle back to finish early.
           </p>
-          <div className="tmr" id="tmr" style={{ ['--tw' as string]: `${progressPercent}%` } as React.CSSProperties}>
+          <div
+            className="tmr"
+            id="tmr"
+            style={{ ['--tw' as string]: `${progressPercent}%` } as React.CSSProperties}
+          >
             <i />
             <span>
               Closes in <span id="rt">{resTimer}</span>s
             </span>
           </div>
         </div>
+      </div>
+      <div className="again" id="again">
+        Put the bottle back anytime to finish
       </div>
     </section>
   );

@@ -67,7 +67,7 @@ export const TotemGame: React.FC = () => {
     fuel: '100%',
     pts: '+10',
     rkN: 1,
-    rkT: 247,
+    rkT: 1,
     rkTxt: "Farthest flight today. You're unstoppable!",
   });
   const [resTimer, setResTimer] = useState(20);
@@ -184,7 +184,7 @@ export const TotemGame: React.FC = () => {
       key: D.k,
       dist: distFormatted,
       fuel: `${f}%`,
-      pts: `+${D.p}`,
+      pts: '+10',
       rkN: rk,
       rkT: tot,
       rkTxt,
@@ -201,7 +201,7 @@ export const TotemGame: React.FC = () => {
         sessionId: `TOTEM_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
         playerName: D.n,
         totalShakes: eng.shakesCount,
-        totalScore: D.p + f * 10,
+        totalScore: 10,
         flightDistance: Math.round(distKm),
         duration: 10,
       }),
@@ -954,21 +954,11 @@ export const TotemGame: React.FC = () => {
           rstCanvasRef={rstCanvasRef}
           resData={resData}
           resTimer={resTimer}
+          isAudioMuted={isAudioMuted}
+          onToggleAudio={toggleAudio}
         />
 
         <div ref={flashRef} className="flash" id="flash" />
-
-        <button
-          id="sndB"
-          className={activeScreen === 'res' ? 'res-pos' : ''}
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleAudio();
-          }}
-          aria-label="Toggle Sound"
-        >
-          {isAudioMuted ? '🔇' : '🔊'}
-        </button>
       </div>
 
       <OperatorOverlay

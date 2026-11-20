@@ -44,33 +44,35 @@ export const IdleScreen: React.FC<IdleScreenProps> = ({ active, ctaRef }) => {
           <b>Coke It Up!</b>
         </div>
 
-        {/* Original Shake Button without extra wrapper, keeping exact original UI button */}
+        {/* Shake Button */}
         <div className="tile t1">
           <img src="/totem-assets/asset_43_88bfa2e9.png" alt="Shake" />
           <em>Shake</em>
         </div>
 
-        {/* HOW TO PLAY Guide Panel with yellow highlighted keywords */}
-        <div className="how-to-play">
-          <div className="htp-title">HOW TO PLAY</div>
-          <div className="htp-step">
-            <div className="htp-num">1</div>
-            <div className="htp-text">
-              <strong className="gold">Shake</strong> the bottle for 10 seconds to fill your cola fuel
-            </div>
-          </div>
-          <div className="htp-step">
-            <div className="htp-num">2</div>
-            <div className="htp-text">
-              <strong className="gold">Fly</strong> your hero as far as you can, up to the planets
-            </div>
-          </div>
-          <div className="htp-step">
-            <div className="htp-num">3</div>
-            <div className="htp-text">
-              <strong className="gold">Scan the QR</strong> in the Sales Rally microsite to get your points
-            </div>
-          </div>
+        {/* How to play guide panel matching coke-it-up-totem (3).html */}
+        <div className="howto">
+          <small>How to play</small>
+          <ol>
+            <li>
+              <b>1</b>
+              <span>
+                <strong>Shake</strong> the bottle for 10 seconds to fill your cola fuel
+              </span>
+            </li>
+            <li>
+              <b>2</b>
+              <span>
+                <strong>Fly</strong> your hero as far as you can, up to the planets
+              </span>
+            </li>
+            <li>
+              <b>3</b>
+              <span>
+                <strong>Scan the QR</strong> in the Sales Rally microsite to get your points
+              </span>
+            </li>
+          </ol>
         </div>
       </div>
 
