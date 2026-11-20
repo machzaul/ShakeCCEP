@@ -919,12 +919,7 @@ export const TotemGame: React.FC = () => {
           <i className="s" />
         </div>
 
-        <IdleScreen
-          active={activeScreen === 'idle'}
-          ctaRef={ctaRef}
-          isAudioMuted={isAudioMuted}
-          onToggleAudio={toggleAudio}
-        />
+        <IdleScreen active={activeScreen === 'idle'} ctaRef={ctaRef} />
 
         <ShakeScreen
           active={activeScreen === 'shake'}
@@ -959,11 +954,21 @@ export const TotemGame: React.FC = () => {
           rstCanvasRef={rstCanvasRef}
           resData={resData}
           resTimer={resTimer}
-          isAudioMuted={isAudioMuted}
-          onToggleAudio={toggleAudio}
         />
 
         <div ref={flashRef} className="flash" id="flash" />
+
+        <button
+          id="sndB"
+          className={activeScreen === 'res' ? 'res-pos' : ''}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleAudio();
+          }}
+          aria-label="Toggle Sound"
+        >
+          {isAudioMuted ? '🔇' : '🔊'}
+        </button>
       </div>
 
       <OperatorOverlay
